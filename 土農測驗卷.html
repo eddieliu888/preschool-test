@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專業英語測驗卷 (大字體清晰版)</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Patrick+Hand&family=Itim&family=Caveat:wght@700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* --- 全域變數 (字體放大區) --- */
+        :root {
+            --english-font: 'Patrick Hand', 'Comic Sans MS', cursive;
+            --chinese-font: 'Noto Sans TC', "Microsoft JhengHei", sans-serif;
+            --theme-color: #212121;
+            --bg-color: #e0e0e0;
+            
+            /* ★★★ 修改重點：字體大幅調大 ★★★ */
+            --q-font-size: 34px;      /* 題目文字大小 (原 25px) */
+            --header-title-size: 60px; /* 標題文字大小 (原 46px) */
+            --header-info-size: 28px;  /* 日期/老師文字 (原 22px) */
+        }
+
+        body {
+            font-family: var(--chinese-font);
+            margin: 0; padding: 20px;
+            background-color: var(--bg-color);
+            color: #000;
+        }
+
+        /* --- 控制面板 --- */
+        .control-panel {
+            background: #ffffff;
+            padding: 20px 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            max-width: 1100px;
+            margin: 0 auto 30px auto;
+            border-radius: 12px;
+            border-top: 8px solid #000;
+        }
+
+        .top-bar { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0; flex-wrap: wrap; }
+        h2.panel-title { margin: 0; font-size: 24px; color: #000; font-weight: 900; margin-right: auto; letter-spacing: 1px; }
+        
+        .compact-input-group { display: flex; align-items: center; gap: 8px; }
+        .compact-input-group label { font-size: 15px; font-weight: 700; color: #555; white-space: nowrap;}
+        .compact-input-group input, .compact-input-group select {
+            padding: 8px 12px; border: 2px solid #eee; border-radius: 6px; font-size: 15px; font-family: var(--chinese-font); font-weight: 500; transition: 0.3s;
+        }
+        .compact-input-group input:focus { border-color: #000; outline: none; }
+
+        .print-checks { display: flex; gap: 15px; background: #f5f5f5; padding: 8px 20px; border-radius: 50px; border: 1px solid #ddd; }
+        .check-label { font-size: 15px; font-weight: 700; cursor: pointer; user-select: none; display: flex; align-items: center; color: #333; }
+        .check-label input { margin-right: 8px; width: 18px; height: 18px; accent-color: #000; }
+
+        .tabs-header { display: flex; gap: 5px; margin-bottom: 0; padding-left: 10px; }
+        .tab-btn {
+            padding: 12px 30px; background: #cfd8dc; border: none; border-radius: 10px 10px 0 0;
+            font-size: 16px; font-weight: bold; color: #546e7a; cursor: pointer; transition: 0.2s;
+        }
+        .tab-btn.active { background: #263238; color: white; transform: translateY(-2px); box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+
+        .tab-content { background: #fff; padding: 25px; border: 3px solid #263238; border-radius: 10px; position: relative; }
+        .topic-row { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; background: #eceff1; padding: 15px; border-radius: 8px; }
+        .topic-row input { flex: 1; padding: 10px; font-size: 20px; border: 2px solid #cfd8dc; border-radius: 6px; font-family: var(--english-font); font-weight: bold; color: #000; }
+        .topic-row input:focus { border-color: #000; outline: none; }
+
+        #qContainer { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 30px; }
+        .q-row { display: flex; align-items: center; }
+        .q-row span { width: 35px; font-weight: 800; color: #000; font-size: 20px; font-family: var(--english-font); }
+        .q-row input { flex: 1; padding: 10px; border: 2px solid #eee; border-radius: 6px; font-family: var(--english-font); font-size: 18px; background: #fafafa; }
+        .q-row input:focus { border-color: #000; outline: none; background: #fff; }
+
+        .action-bar { display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 2px dashed #eee; }
+        .btn { padding: 12px 30px; border: none; cursor: pointer; border-radius: 6px; font-weight: bold; font-size: 16px; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .btn-print { background: #000; color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .btn-print:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+        .btn-clear { background: #e53935; color: white; }
+
+        /* --- 核心排版 CSS (Grid System) --- */
+        #printContainer { display: flex; flex-direction: column; align-items: center; gap: 40px; padding-bottom: 50px; }
+        
+        .sheet-outer {
+            width: 210mm; 
+            height: 296mm; 
+            background: white;
+            box-shadow: 0 0 30px rgba(0,0,0,0.15); 
+            position: relative;
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            grid-template-rows: 1fr 1fr;
+            box-sizing: border-box;
+            page-break-after: always;
+            overflow: hidden;
+            --cut-line-color: #ccc; 
+        }
+
+        /* 裁切線 */
+        .sheet-outer::before { content: ""; position: absolute; left: 50%; top: 3mm; bottom: 3mm; border-left: 1px dashed var(--cut-line-color); z-index: 10; }
+        .sheet-outer::after { content: ""; position: absolute; top: 50%; left: 3mm; right: 3mm; border-top: 1px dashed var(--cut-line-color); z-index: 10; }
+        
+        /* 1/4 格子容器 */
+        .quarter-cell { 
+            position: relative; 
+            overflow: hidden; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* ★ 虛擬畫布 (Virtual Sheet) ★ */
+        .virtual-sheet {
+            width: 204mm; 
+            height: 270mm; 
+            transform: scale(0.5); /* 保持 50% 縮放以適應 1/4 格子 */
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            font-family: var(--english-font); 
+            color: #000;
+            padding: 0 5px; 
+            box-sizing: border-box;
+        }
+        
+        /* --- 區塊 1: 標題區 --- */
+        .header { 
+            display: flex; justify-content: space-between; align-items: flex-end; 
+            border-bottom: 5px solid #000; /* 線條加粗一點 */
+            padding-bottom: 5px; 
+            margin-bottom: 5px; 
+            flex-shrink: 0; 
+            width: 100%;
+        }
+        .header-item { display: flex; flex-direction: column; }
+        
+        /* 標籤文字放大 */
+        .label { font-size: 18px; font-weight: 800; color: #222; font-family: var(--chinese-font); line-height: 1; margin-bottom: 4px; letter-spacing: 0.5px; }
+        
+        .value { font-size: var(--header-info-size); font-weight: 800; font-family: var(--english-font); line-height: 1; }
+        
+        /* 班級中文放大 */
+        .value.zh { font-family: var(--chinese-font); font-size: 32px; letter-spacing: 2px; font-weight: 900; }
+        
+        .title-wrap { text-align: center; flex-grow: 1; padding: 0 5px; }
+        .main-title { font-size: var(--header-title-size); text-transform: uppercase; letter-spacing: 2px; line-height: 0.9; font-weight: 900; font-family: var(--english-font); }
+        
+        /* --- 區塊 2: 題目列表 (彈性分佈) --- */
+        .question-list { 
+            list-style: none; padding: 0; margin: 0; 
+            flex-grow: 1; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly; 
+            width: 100%;
+        }
+        
+        /* Flex Wrap 邏輯保持不變 */
+        .question-item {
+            display: flex; 
+            flex-wrap: wrap; 
+            align-items: flex-end; 
+            gap: 2px 15px; 
+            border-bottom: 1.5px dotted #999;
+            padding-bottom: 2px;
+            margin-bottom: 0; 
+        }
+
+        .q-text-group { 
+            display: flex; 
+            align-items: flex-start; 
+            flex: 1 1 auto; 
+            max-width: 100%;
+        }
+        
+        .q-num {
+            min-width: 38px; /* 稍微加寬以容納大數字 */
+            font-size: var(--q-font-size);
+            font-weight: 800;
+            line-height: 1.1;
+            color: #000;
+            margin-right: 0px;
+            flex-shrink: 0;
+        }
+        .q-body {
+            font-size: var(--q-font-size);
+            line-height: 1.1;
+            font-weight: 600;
+            color: #000;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+        /* 評分區塊放大 */
+        .rating-row {
+            display: flex; 
+            gap: 8px; /* 間距稍微加大 */
+            font-size: 20px; /* 字體加大 */
+            font-weight: 700;
+            font-family: var(--chinese-font); 
+            align-items: center;
+            white-space: nowrap; 
+            margin-left: auto; 
+        }
+        .checkbox-wrap { display: flex; align-items: center; }
+        .box { display: inline-block; width: 24px; height: 24px; border: 3px solid #000; margin-right: 5px; background: #fff; border-radius: 4px; }
+
+        /* --- 區塊 3: 頁尾 --- */
+        .bottom-container {
+            flex-shrink: 0;
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        .footer-section { 
+            border-top: 5px solid #000; 
+            padding-top: 8px; font-family: var(--chinese-font); margin-bottom: 5px; 
+        }
+        .feedback-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 25px; }
+        
+        .stack-label { display: flex; flex-direction: column; justify-content: center; line-height: 1.0; }
+        
+        /* 頁尾文字放大 */
+        .stack-zh { font-size: 24px; font-weight: 900; color: #000; }
+        .stack-en { font-size: 18px; font-weight: 600; color: #444; font-family: var(--english-font); }
+        
+        .other-input-container { display: flex; align-items: flex-end; width: 100%; }
+        .other-input { 
+            border: none; border-bottom: 2.5px solid #000; background: transparent; 
+            font-size: 22px; font-family: var(--chinese-font); font-weight: bold; 
+            width: 100%; padding: 0 5px; color: #000; 
+        }
+        
+        .signature-section { 
+            display: flex; justify-content: space-between; align-items: flex-end; margin-top: 8px; padding: 0 2px; 
+        }
+        
+        /* 簽名區放大 */
+        .sign-block { font-size: 24px; font-family: var(--english-font); font-weight: 800; display: flex; align-items: flex-end; }
+        .teacher-sign { font-family: 'Dancing Script', cursive; font-size: 56px; color: #000; line-height: 0.7; margin-left: 8px; }
+        .parent-line { border-bottom: 2.5px solid #000; display: inline-block; width: 180px; margin-left: 8px; }
+
+        @media print {
+            @page { 
+                size: A4 portrait; 
+                margin: 0; 
+            }
+            body { background: white; margin: 0; padding: 0; }
+            .control-panel { display: none !important; }
+            #printContainer { display: block; gap: 0; padding: 0; }
+            .sheet-outer { 
+                margin: 0; 
+                box-shadow: none; 
+                page-break-after: always; 
+                width: 210mm;
+                height: 296mm; 
+                overflow: hidden;
+            }
+            .quarter-cell {
+                height: 148mm; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="control-panel">
+        <div class="top-bar">
+            <h2 class="panel-title"><i class="fas fa-gem"></i> 專業測驗卷 (大字體清晰版)</h2>
+            
+            <div class="compact-input-group">
+                <label>日期</label>
+                <input type="date" id="inputDate" style="width:140px;">
+            </div>
+            
+            <div class="compact-input-group">
+                <label>老師</label>
+                <input type="text" id="inputTeacher" value="Eddie" style="width:80px;">
+            </div>
+
+            <div class="compact-input-group">
+                <label>字型</label>
+                <select id="fontSelect" onchange="updateHandler()" style="width:130px;">
+                    <option value="'Patrick Hand', cursive">Patrick Hand</option>
+                    <option value="'Itim', cursive">Itim</option>
+                    <option value="'Caveat', cursive">Caveat</option>
+                </select>
+            </div>
+
+            <div style="flex-grow:1;"></div>
+
+            <div class="print-checks">
+                <span style="font-size:14px; font-weight:bold; color:#555; margin-right:5px;">列印:</span>
+                <label class="check-label"><input type="checkbox" class="class-check" value="大班" checked onchange="renderAllSheets()">大班</label>
+                <label class="check-label"><input type="checkbox" class="class-check" value="中班" checked onchange="renderAllSheets()">中班</label>
+                <label class="check-label"><input type="checkbox" class="class-check" value="小班" checked onchange="renderAllSheets()">小班</label>
+            </div>
+        </div>
+
+        <div class="tabs-header">
+            <button class="tab-btn active" onclick="switchTab('大班')">大班 (L)</button>
+            <button class="tab-btn" onclick="switchTab('中班')">中班 (M)</button>
+            <button class="tab-btn" onclick="switchTab('小班')">小班 (S)</button>
+        </div>
+
+        <div class="tab-content">
+            <div class="topic-row">
+                <label style="font-weight:bold; min-width:40px; color:#333;"><i class="fas fa-heading"></i> 主題</label>
+                <input type="text" id="inputTopic" placeholder="例如: UNIT 1" oninput="saveCurrentTabInput()">
+            </div>
+            <div id="qContainer"></div>
+            <div class="action-bar">
+                <button class="btn btn-clear" onclick="clearCurrentQuestions()"><i class="fas fa-trash-alt"></i> 清空內容</button>
+                <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> 立即列印</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="printContainer"></div>
+
+    <script>
+        const STORAGE_KEY = 'eddie_worksheet_LARGE_FONT'; 
+        const LEGACY_KEYS = [
+            'eddie_worksheet_FULL_BLEED',
+            'eddie_worksheet_FLEX_LOCK',
+            'eddie_worksheet_PRO_SMART_LAYOUT'
+        ];
+
+        const QUESTION_COUNT = 6;
+        let currentTab = '大班';
+
+        let classData = {
+            '大班': { topic: "BIG CLASS", questions: ["", "", "", "", "", ""] },
+            '中班': { topic: "MIDDLE CLASS", questions: ["", "", "", "", "", ""] },
+            '小班': { topic: "SMALL CLASS", questions: ["", "", "", "", "", ""] }
+        };
+
+        window.onload = function() {
+            initQuestionFields();
+            loadState(); 
+            setTodayDate();
+            switchTab('大班');
+        };
+
+        function setTodayDate() {
+            const now = new Date();
+            const offset = now.getTimezoneOffset(); 
+            const localDate = new Date(now.getTime() - (offset*60*1000));
+            document.getElementById('inputDate').value = localDate.toISOString().split('T')[0];
+            renderAllSheets();
+        }
+
+        function initQuestionFields() {
+            const container = document.getElementById('qContainer');
+            container.innerHTML = '';
+            for(let i=1; i<=QUESTION_COUNT; i++) {
+                const div = document.createElement('div');
+                div.className = 'q-row';
+                div.innerHTML = `<span>${i}.</span><input type="text" class="q-input" id="q${i}" oninput="saveCurrentTabInput()">`;
+                container.appendChild(div);
+            }
+        }
+
+        window.switchTab = function(className) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText.includes(className));
+            });
+            currentTab = className;
+            const data = classData[className];
+            document.getElementById('inputTopic').value = data.topic || "";
+            const inputs = document.querySelectorAll('.q-input');
+            inputs.forEach((input, index) => {
+                input.value = data.questions[index] || "";
+            });
+        }
+
+        window.saveCurrentTabInput = function() {
+            const topicVal = document.getElementById('inputTopic').value;
+            const qValues = [];
+            document.querySelectorAll('.q-input').forEach(input => qValues.push(input.value));
+            classData[currentTab].topic = topicVal;
+            classData[currentTab].questions = qValues;
+            saveState();
+            renderAllSheets();
+        }
+
+        function updateHandler() {
+            const selectedFont = document.getElementById('fontSelect').value;
+            document.documentElement.style.setProperty('--english-font', selectedFont);
+            renderAllSheets();
+        }
+
+        function saveState() {
+            const globalSettings = {
+                teacher: document.getElementById('inputTeacher').value,
+                font: document.getElementById('fontSelect').value,
+                checkedClasses: []
+            };
+            document.querySelectorAll('.class-check').forEach(chk => {
+                if(chk.checked) globalSettings.checkedClasses.push(chk.value);
+            });
+            const fullSaveData = { global: globalSettings, classes: classData };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(fullSaveData));
+        }
+
+        function loadState() {
+            let storedJson = localStorage.getItem(STORAGE_KEY);
+            if (!storedJson) {
+                for (let legacyKey of LEGACY_KEYS) {
+                    const legacyData = localStorage.getItem(legacyKey);
+                    if (legacyData) {
+                        storedJson = legacyData;
+                        localStorage.setItem(STORAGE_KEY, legacyData);
+                        break;
+                    }
+                }
+            }
+
+            if(storedJson) {
+                const data = JSON.parse(storedJson);
+                if(data.global) {
+                    if(data.global.teacher) document.getElementById('inputTeacher').value = data.global.teacher;
+                    if(data.global.font) {
+                        document.getElementById('fontSelect').value = data.global.font;
+                        document.documentElement.style.setProperty('--english-font', data.global.font);
+                    }
+                    if(data.global.checkedClasses) {
+                        document.querySelectorAll('.class-check').forEach(chk => {
+                            chk.checked = data.global.checkedClasses.includes(chk.value);
+                        });
+                    }
+                }
+                if(data.classes) classData = data.classes;
+            }
+            document.getElementById('inputTeacher').addEventListener('input', () => { saveState(); renderAllSheets(); });
+            document.getElementById('inputDate').addEventListener('change', renderAllSheets); 
+        }
+
+        function clearCurrentQuestions() {
+            if(confirm(`確定要清空【${currentTab}】的所有內容嗎？`)) {
+                document.querySelectorAll('.q-input').forEach(input => input.value = '');
+                document.getElementById('inputTopic').value = '';
+                saveCurrentTabInput();
+            }
+        }
+
+        function generateA4PageHTML(dateStr, className, topicVal, teacherVal, questions) {
+            let questionsHtml = '<ul class="question-list">';
+            let validIndex = 1;
+            
+            questions.forEach(text => {
+                if(text && text.trim() !== "") { 
+                    questionsHtml += `
+                        <li class="question-item">
+                            <div class="q-text-group">
+                                <span class="q-num">${validIndex}.</span>
+                                <span class="q-body">${text}</span>
+                            </div>
+                            <div class="rating-row">
+                                <div class="checkbox-wrap"><span class="box"></span>Excellent</div>
+                                <div class="checkbox-wrap"><span class="box"></span>Good</div>
+                                <div class="checkbox-wrap"><span class="box"></span>Practice</div>
+                            </div>
+                        </li>`;
+                    validIndex++;
+                }
+            });
+            questionsHtml += '</ul>';
+
+            const singleSheetHTML = `
+                <div class="virtual-sheet">
+                    <div class="header">
+                        <div class="header-item" style="align-items: flex-start;">
+                            <span class="label">DATE</span>
+                            <span class="value">${dateStr}</span>
+                        </div>
+                        <div class="title-wrap">
+                            <div class="main-title">${topicVal}</div>
+                        </div>
+                        <div class="header-item" style="align-items: flex-end;">
+                            <span class="label">CLASS</span>
+                            <span class="value zh">${className}</span>
+                        </div>
+                    </div>
+
+                    ${questionsHtml}
+
+                    <div class="bottom-container">
+                        <div class="footer-section">
+                            <div class="feedback-grid">
+                                <div class="checkbox-wrap">
+                                    <span class="box"></span>
+                                    <div class="stack-label">
+                                        <span class="stack-zh">需多聽 CD</span>
+                                        <span class="stack-en">Listen More</span>
+                                    </div>
+                                </div>
+                                <div class="checkbox-wrap">
+                                    <span class="box"></span>
+                                    <div class="stack-label">
+                                        <span class="stack-zh">需多開口練習</span>
+                                        <span class="stack-en">Speak More</span>
+                                    </div>
+                                </div>
+                                <div class="checkbox-wrap">
+                                    <span class="box"></span>
+                                    <div class="stack-label">
+                                        <span class="stack-zh">有進步</span>
+                                        <span class="stack-en">Improved</span>
+                                    </div>
+                                </div>
+                                <div class="checkbox-wrap">
+                                    <span class="box"></span>
+                                    <div class="stack-label">
+                                        <span class="stack-zh">發音不錯</span>
+                                        <span class="stack-en">Pronunciation</span>
+                                    </div>
+                                </div>
+                                <div class="checkbox-wrap">
+                                    <span class="box"></span>
+                                    <div class="stack-label">
+                                        <span class="stack-zh">未完成測驗</span>
+                                        <span class="stack-en">Incomplete</span>
+                                    </div>
+                                </div>
+                                <div class="checkbox-wrap" style="align-items:flex-end;">
+                                    <span class="box" style="margin-bottom:5px;"></span>
+                                    <div class="stack-label" style="width:100%;">
+                                        <span class="stack-zh">其他 <span style="font-weight:normal; font-size:16px;">(Other):</span></span>
+                                        <div class="other-input-container">
+                                            <input type="text" class="other-input">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="signature-section">
+                            <div class="sign-block">
+                                Teacher: <span class="teacher-sign">${teacherVal}</span>
+                            </div>
+                            <div class="sign-block">
+                                Parent: <span class="parent-line"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            let cellsHTML = '';
+            for(let i=0; i<4; i++) {
+                cellsHTML += `<div class="quarter-cell">${singleSheetHTML}</div>`;
+            }
+            return `<div class="sheet-outer">${cellsHTML}</div>`;
+        }
+
+        function renderAllSheets() {
+            const container = document.getElementById('printContainer');
+            container.innerHTML = ''; 
+            const dateVal = document.getElementById('inputDate').value;
+            const dateStr = dateVal ? dateVal.replace(/-/g, '/') : '';
+            const teacherVal = document.getElementById('inputTeacher').value;
+            const checkBoxes = document.querySelectorAll('.class-check:checked');
+            
+            if(checkBoxes.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:50px; color:#555;">(請勾選上方班級以預覽)</div>';
+                return;
+            }
+            checkBoxes.forEach(chk => {
+                const className = chk.value;
+                const specificData = classData[className];
+                const pageHTML = generateA4PageHTML(dateStr, className, specificData.topic, teacherVal, specificData.questions);
+                const range = document.createRange();
+                const frag = range.createContextualFragment(pageHTML);
+                container.appendChild(frag);
+            });
+        }
+    </script>
+</body>
+</html>
